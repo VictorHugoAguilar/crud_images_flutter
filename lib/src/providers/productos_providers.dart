@@ -1,3 +1,7 @@
+import 'dart:io';
+import 'package:mime_type/mime_type.dart';
+import 'package:http_parser/http_parser.dart';
+
 import 'package:formvalidator/src/models/producto_model.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -45,6 +49,8 @@ class ProductosProvider {
     final response = await http.delete(url);
 
     print(response.body);
+
+    return 1;
   }
 
   Future<bool> editarProducto(ProductoModel producto) async {
@@ -57,5 +63,39 @@ class ProductosProvider {
     print(decodedData);
 
     return true;
+  }
+
+  Future<String> subirImagen(File image) async {
+    final url = Uri.parse(
+        'https://api.cloudinary.com/v1_1/lavaca/image/upload?upload_preset=eh5xvssw');
+
+    final mineType = mime(image.path).split('/');
+
+    final imageUploadRequest = http.MultipartRequest(
+      'POST',
+      url,
+    );
+
+    final file = await http.MultipartFile.fromPath(
+      'file',
+      image.path,
+      contentType: MediaType(mineType[0], mineType[1]),
+    );
+
+    imageUploadRequest.files.add(file);
+
+    final streamResponse = await imageUploadRequest.send();
+
+    final respuesta = await http.Response.fromStream(streamResponse);
+
+    if (respuesta.statusCode != 200 && respuesta.statusCode != 201) {
+      print('Algo salio mal');
+      print(respuesta.body);
+      return null;
+    }
+
+    final respData = json.decode(respuesta.body);
+
+    return respData['secure_url'];
   }
 }

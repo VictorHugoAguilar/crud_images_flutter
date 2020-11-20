@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:formvalidator/src/models/producto_model.dart';
 import 'package:formvalidator/src/providers/productos_providers.dart';
 import 'package:formvalidator/src/utils/util.dart' as utils;
+import 'package:image_picker/image_picker.dart';
 
 class ProductoPage extends StatefulWidget {
   @override
@@ -16,6 +19,7 @@ class _ProductoPageState extends State<ProductoPage> {
 
   ProductoModel producto = new ProductoModel();
   bool _guardando = false;
+  File foto;
 
   @override
   Widget build(BuildContext context) {
@@ -32,8 +36,13 @@ class _ProductoPageState extends State<ProductoPage> {
         title: Text('Producto'),
         actions: [
           IconButton(
-              icon: Icon(Icons.photo_size_select_actual), onPressed: () {}),
-          IconButton(icon: Icon(Icons.camera_alt), onPressed: () {}),
+            icon: Icon(Icons.photo_size_select_actual),
+            onPressed: _seleccionarFoto,
+          ),
+          IconButton(
+            icon: Icon(Icons.camera_alt),
+            onPressed: _tomarFoto,
+          ),
         ],
       ),
       body: SingleChildScrollView(
@@ -43,6 +52,7 @@ class _ProductoPageState extends State<ProductoPage> {
             key: formkey,
             child: Column(
               children: <Widget>[
+                _mostrarFoto(),
                 _crearNombre(),
                 _crearPrecio(),
                 _crearDisponible(),
@@ -104,7 +114,7 @@ class _ProductoPageState extends State<ProductoPage> {
     );
   }
 
-  void _submit() {
+  void _submit() async {
     if (!formkey.currentState.validate()) {
       return;
     }
@@ -114,6 +124,10 @@ class _ProductoPageState extends State<ProductoPage> {
     setState(() {
       _guardando = true;
     });
+
+    if (foto != null) {
+      producto.fotoUrl = await productosProvider.subirImagen(foto);
+    }
 
     // print(producto.titulo);
     //  print(producto.valor);
@@ -152,5 +166,42 @@ class _ProductoPageState extends State<ProductoPage> {
     );
 
     scaffolkey.currentState.showSnackBar(snackbar);
+  }
+
+  _seleccionarFoto() async {
+    _procesarFoto(ImageSource.gallery);
+  }
+
+  _tomarFoto() async {
+    _procesarFoto(ImageSource.camera);
+  }
+
+  _procesarFoto(ImageSource origin) async {
+    final ImagePicker _picker = ImagePicker();
+
+    final pickedFile = await _picker.getImage(source: origin);
+
+    foto = File(pickedFile.path);
+
+    if (foto != null) {
+      // product.urlImg = null;
+    }
+
+    setState(() {});
+  }
+
+  Widget _mostrarFoto() {
+    if (producto.fotoUrl != null) {
+      return Container();
+    } else {
+      if (foto != null) {
+        return Image.file(
+          foto,
+          fit: BoxFit.cover,
+          height: 300.0,
+        );
+      }
+      return Image.asset('assets/img/no-image.png');
+    }
   }
 }
