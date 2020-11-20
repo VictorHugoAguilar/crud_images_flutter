@@ -10,13 +10,24 @@ class ProductoPage extends StatefulWidget {
 
 class _ProductoPageState extends State<ProductoPage> {
   final formkey = GlobalKey<FormState>();
+  final scaffolkey = GlobalKey<ScaffoldState>();
+
   final productosProvider = new ProductosProvider();
 
   ProductoModel producto = new ProductoModel();
+  bool _guardando = false;
 
   @override
   Widget build(BuildContext context) {
+    final ProductoModel productoData =
+        ModalRoute.of(context).settings.arguments;
+
+    if (productoData != null) {
+      producto = productoData;
+    }
+
     return Scaffold(
+      key: scaffolkey,
       appBar: AppBar(
         title: Text('Producto'),
         actions: [
@@ -89,7 +100,7 @@ class _ProductoPageState extends State<ProductoPage> {
       textColor: Colors.white,
       label: Text('Guardar'),
       icon: Icon(Icons.save),
-      onPressed: _submit,
+      onPressed: (_guardando) ? null : _submit,
     );
   }
 
@@ -100,11 +111,27 @@ class _ProductoPageState extends State<ProductoPage> {
 
     formkey.currentState.save();
 
-    print(producto.titulo);
-    print(producto.valor);
-    print(producto.disponible);
+    setState(() {
+      _guardando = true;
+    });
 
-    productosProvider.crearProducto(producto);
+    // print(producto.titulo);
+    //  print(producto.valor);
+    //  print(producto.disponible);
+
+    if (producto.id == null) {
+      productosProvider.crearProducto(producto);
+      mostrarSnackbar('Registro guardado');
+    } else {
+      productosProvider.editarProducto(producto);
+      mostrarSnackbar('Registro actualizado');
+    }
+
+    setState(() {
+      _guardando = false;
+    });
+
+    Navigator.pop(context);
   }
 
   Widget _crearDisponible() {
@@ -116,5 +143,14 @@ class _ProductoPageState extends State<ProductoPage> {
         producto.disponible = value;
       }),
     );
+  }
+
+  void mostrarSnackbar(String mensaje) {
+    final snackbar = SnackBar(
+      content: Text(mensaje),
+      duration: Duration(milliseconds: 2000),
+    );
+
+    scaffolkey.currentState.showSnackBar(snackbar);
   }
 }

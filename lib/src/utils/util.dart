@@ -3,5 +3,5 @@ bool isNumeric(String s) {
 
   final n = num.tryParse(s);
 
-  return (s == null) ? false : true;
+  return (n == null) ? false : true;
 }
