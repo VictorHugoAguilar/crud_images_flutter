@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:formvalidator/src/preferencias_usuario/preferencias_usuario.dart';
 import 'package:mime_type/mime_type.dart';
 import 'package:http_parser/http_parser.dart';
 
@@ -8,9 +9,10 @@ import 'dart:convert';
 
 class ProductosProvider {
   final String _url = 'https://flutter-varios-dc6aa.firebaseio.com';
+  final _prefs = new PreferenciasUsuario();
 
   Future<bool> crearProducto(ProductoModel producto) async {
-    final url = '$_url/productos.json';
+    final url = '$_url/productos.json?auth=${_prefs.token}';
 
     final response = await http.post(url, body: productoModelToJson(producto));
 
@@ -22,7 +24,7 @@ class ProductosProvider {
   }
 
   Future<List<ProductoModel>> cargarProductos() async {
-    final url = '$_url/productos.json';
+    final url = '$_url/productos.json?auth=${_prefs.token}';
 
     final response = await http.get(url);
 
@@ -44,7 +46,7 @@ class ProductosProvider {
   }
 
   Future<int> borrarProducto(String id) async {
-    final url = '$_url/productos/$id.json';
+    final url = '$_url/productos/$id.json?auth=${_prefs.token}';
 
     final response = await http.delete(url);
 
