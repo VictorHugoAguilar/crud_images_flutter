@@ -6,6 +6,9 @@ import 'package:formvalidator/src/pages/producto_page.dart';
 import 'package:formvalidator/src/pages/registro_page.dart';
 
 void main() {
+  final prefs = new PreferenciasUsuario();
+  await prefs.initPrefs();
+
   runApp(MyApp());
 }
 

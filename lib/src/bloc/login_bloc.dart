@@ -22,7 +22,7 @@ class LoginBloc with Validators {
 
   // Obtner el ultimo valor ingresoa a los stream
   String get email => _emailController.value;
-  String get paswword => _passwordController.value;
+  String get password => _passwordController.value;
 
   disponse() {
     _emailController?.close();
