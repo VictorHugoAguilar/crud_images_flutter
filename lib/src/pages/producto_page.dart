@@ -184,7 +184,7 @@ class _ProductoPageState extends State<ProductoPage> {
     foto = File(pickedFile.path);
 
     if (foto != null) {
-      // product.urlImg = null;
+      producto.fotoUrl = null;
     }
 
     setState(() {});
