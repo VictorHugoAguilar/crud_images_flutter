@@ -1,9 +1,11 @@
 import 'dart:convert';
 
+import 'package:formvalidator/src/preferencias_usuario/preferencias_usuario.dart';
 import 'package:http/http.dart' as http;
 
 class UsuarioProvider {
   final String _firebaseToken = 'AIzaSyDGP7zY9eoHeLgmbToBP8G904b6loaUY5Y';
+  final _prefs = new PreferenciasUsuario();
 
   Future<Map<String, dynamic>> login(String email, String password) async {
     final authData = {
@@ -23,6 +25,7 @@ class UsuarioProvider {
 
     if (decodeRespuesta.containsKey('idToken')) {
       // Guardar el token en el storage
+      _prefs.token = decodeRespuesta['idToken'];
       return {'ok': true, 'token': decodeRespuesta['idToken']};
     } else {
       return {'ok': true, 'mensaje': decodeRespuesta['error']['message']};
@@ -48,6 +51,7 @@ class UsuarioProvider {
 
     if (decodeRespuesta.containsKey('idToken')) {
       // Guardar el token en el storage
+      _prefs.token = decodeRespuesta['idToken'];
       return {'ok': true, 'token': decodeRespuesta['idToken']};
     } else {
       return {'ok': true, 'mensaje': decodeRespuesta['error']['message']};
