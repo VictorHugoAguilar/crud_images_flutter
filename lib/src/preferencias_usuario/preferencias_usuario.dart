@@ -29,12 +29,12 @@ class PreferenciasUsuario {
   }
 
   // GET y SET del nombre
-  get nombre {
-    return _prefs.getString('nombre') ?? '';
+  get token {
+    return _prefs.getString('token') ?? '';
   }
 
-  set nombre(String value) {
-    _prefs.setString('nombre', value);
+  set token(String value) {
+    _prefs.setString('token', value);
   }
 
   // GET y SET de la última página
