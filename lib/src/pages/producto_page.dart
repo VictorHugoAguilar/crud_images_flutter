@@ -1,8 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:formvalidator/src/bloc/provider.dart';
 import 'package:formvalidator/src/models/producto_model.dart';
-import 'package:formvalidator/src/providers/productos_providers.dart';
+// import 'package:formvalidator/src/providers/productos_providers.dart';
 import 'package:formvalidator/src/utils/util.dart' as utils;
 import 'package:image_picker/image_picker.dart';
 
@@ -15,7 +16,8 @@ class _ProductoPageState extends State<ProductoPage> {
   final formkey = GlobalKey<FormState>();
   final scaffolkey = GlobalKey<ScaffoldState>();
 
-  final productosProvider = new ProductosProvider();
+  // final productosProvider = new ProductosProvider();
+  ProductosBloc productosBloc;
 
   ProductoModel producto = new ProductoModel();
   bool _guardando = false;
@@ -23,6 +25,8 @@ class _ProductoPageState extends State<ProductoPage> {
 
   @override
   Widget build(BuildContext context) {
+    productosBloc = new ProductosBloc();
+
     final ProductoModel productoData =
         ModalRoute.of(context).settings.arguments;
 
@@ -126,7 +130,8 @@ class _ProductoPageState extends State<ProductoPage> {
     });
 
     if (foto != null) {
-      producto.fotoUrl = await productosProvider.subirImagen(foto);
+      // producto.fotoUrl = await productosProvider.subirImagen(foto);
+      producto.fotoUrl = await productosBloc.subirFoto(foto);
     }
 
     // print(producto.titulo);
@@ -134,10 +139,12 @@ class _ProductoPageState extends State<ProductoPage> {
     //  print(producto.disponible);
 
     if (producto.id == null) {
-      productosProvider.crearProducto(producto);
+      productosBloc.agregarProducto(producto);
+      // productosProvider.crearProducto(producto);
       mostrarSnackbar('Registro guardado');
     } else {
-      productosProvider.editarProducto(producto);
+      productosBloc.editarProducto(producto);
+      // productosProvider.editarProducto(producto);
       mostrarSnackbar('Registro actualizado');
     }
 

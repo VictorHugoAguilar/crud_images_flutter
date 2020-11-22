@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:formvalidator/src/bloc/provider.dart';
+// import 'package:formvalidator/src/bloc/provider.dart';
 import 'package:formvalidator/src/models/producto_model.dart';
-import 'package:formvalidator/src/providers/productos_providers.dart';
+// import 'package:formvalidator/src/providers/productos_providers.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -9,32 +10,36 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final productosProvider = new ProductosProvider();
+  // final productosProvider = new ProductosProvider();
 
   @override
   Widget build(BuildContext context) {
-    final bloc = Provider.of(context);
+    // final bloc = Provider.of(context);
+
+    final productosBloc = Provider.productosBloc(context);
+    productosBloc.cargarProducto();
 
     return Scaffold(
       appBar: AppBar(
         title: Text('Home Page'),
       ),
-      body: _crearListado(),
+      body: _crearListado(productosBloc),
       floatingActionButton: _crearBoton(context),
     );
   }
 
-  Widget _crearListado() {
-    return FutureBuilder(
-      future: productosProvider.cargarProductos(),
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
+  Widget _crearListado(ProductosBloc productosBloc) {
+    return StreamBuilder(
+      stream: productosBloc.productosStream,
+      builder:
+          (BuildContext context, AsyncSnapshot<List<ProductoModel>> snapshot) {
         if (snapshot.hasData) {
           final productos = snapshot.data;
 
           return ListView.builder(
             itemCount: productos.length,
             itemBuilder: (context, index) =>
-                _crearItem(context, productos[index]),
+                _crearItem(context, productosBloc, productos[index]),
           );
         } else {
           return Center(
@@ -45,7 +50,8 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _crearItem(BuildContext context, ProductoModel producto) {
+  Widget _crearItem(BuildContext context, ProductosBloc productosBloc,
+      ProductoModel producto) {
     return Dismissible(
       key: UniqueKey(),
       background: Container(
@@ -53,7 +59,8 @@ class _HomePageState extends State<HomePage> {
       ),
       onDismissed: (direccion) {
         // Borrar producto
-        productosProvider.borrarProducto(producto.id);
+        //  productosProvider.borrarProducto(producto.id);
+        productosBloc.eliminarProducto(producto.id);
       },
       child: Card(
         child: Column(
